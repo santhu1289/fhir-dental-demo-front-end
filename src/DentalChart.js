@@ -146,10 +146,9 @@ function DentalChart({
                 <text
                   key={`label-${tooth.id}`}
                   x={tooth.x + 20}
-                  y={isUpper ? 105 : 160}
+                  y={isUpper ? 100 : 170}
                   textAnchor="middle"
-                  fontSize="10"
-                  fill="#333"
+                  className="fill-gray-800 font-semibold text-[16px] md:text-[12px]"
                 >
                   {tooth.id}
                 </text>
