@@ -1,5 +1,7 @@
 export async function saveCondition(data) {
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  console.log("BASE_URL:", BASE_URL);
+  console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
 
   if (!BASE_URL) {
     throw new Error("API URL is missing 🚨");
