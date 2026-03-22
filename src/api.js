@@ -1,12 +1,10 @@
-export async function saveCondition(data) {
-  // const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-  // console.log("BASE_URL:", BASE_URL);
-  // console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
-  const BASE_URL = "https://fhir-dental-demo-backend.vercel.app"; // 🔁 hardcoded for safety
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:4000"
+    : "https://fhir-dental-demo-backend.vercel.app";
 
-  if (!BASE_URL) {
-    throw new Error("API URL is missing 🚨");
-  }
+export async function saveCondition(data) {
+  console.log("Using API:", BASE_URL);
 
   const response = await fetch(`${BASE_URL}/save-condition`, {
     method: "POST",
