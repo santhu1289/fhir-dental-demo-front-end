@@ -39,10 +39,10 @@ function DentalChart({
   const upperChildTeeth = "ABCDEFGHIJ".split("");
 
   return (
-    <div className="space-y-4">
+    <div>
 
       {/* SWITCH */}
-      <div className="flex items-center justify-center gap-3 bg-gray-100 p-3 rounded-lg">
+      <div className="mb-4 flex items-center gap-3 bg-gray-100 p-3 rounded">
         <span className={mode === "adult" ? "font-semibold" : "text-gray-500"}>
           Adult
         </span>
@@ -66,112 +66,99 @@ function DentalChart({
         </span>
       </div>
 
-      {/* RESPONSIVE SVG WRAPPER */}
-      <div className="w-full bg-white p-2 md:p-4 rounded-xl shadow">
-  
-        <div>
+      <svg width="880" height="360">
 
-          <svg
-    viewBox="0 0 880 360"
-    className="w-full h-auto"
-    preserveAspectRatio="xMidYMid meet"
-  >
+        {/* GUIDELINES */}
+        {mode === "adult" && (
+          <>
+            <line x1="440" y1="0" x2="440" y2="250" stroke="#444" />
+            <line x1="20" y1="130" x2="870" y2="130" stroke="#444" />
+            <text x="20" y="120">Right</text>
+            <text x="845" y="120">Left</text>
+          </>
+        )}
 
-            {/* GUIDELINES */}
-            {mode === "adult" && (
-              <>
-                <line x1="440" y1="0" x2="440" y2="250" stroke="#444" />
-                <line x1="20" y1="130" x2="870" y2="130" stroke="#444" />
-                <text x="20" y="120">Right</text>
-                <text x="845" y="120">Left</text>
-              </>
-            )}
+          {/* CHILD */}
+        {mode === "child" && (
+          <>
+            <line x1="370" y1="0" x2="370" y2="260" stroke="#444" />
+            <line x1="120" y1="130" x2="630" y2="130" stroke="#444" />
+            <text x="120" y="120">Right</text>
+            <text x="610" y="120">Left</text>
+          </>
+        )} {/* TEETH */}
+        {teeth.map((tooth) => {
+          const isHovered = hoveredTooth === tooth.id;
 
-            {mode === "child" && (
-              <>
-                <line x1="370" y1="0" x2="370" y2="260" stroke="#444" />
-                <line x1="120" y1="130" x2="630" y2="130" stroke="#444" />
-                <text x="120" y="120">Right</text>
-                <text x="610" y="120">Left</text>
-              </>
-            )}
+          const isUpper =
+            (mode === "adult" && tooth.id >= 1 && tooth.id <= 16) ||
+            (mode === "child" && upperChildTeeth.includes(tooth.id));
 
-            {/* TEETH */}
-            {teeth.map((tooth) => {
-              const isHovered = hoveredTooth === tooth.id;
+          let fillColor = getToothColor(tooth.id);
+          if (isHovered) fillColor = "#cce6ff";
 
-              const isUpper =
-                (mode === "adult" && tooth.id >= 1 && tooth.id <= 16) ||
-                (mode === "child" && upperChildTeeth.includes(tooth.id));
+          const scale = scaleMap[tooth.type];
 
-              let fillColor = getToothColor(tooth.id);
-              if (isHovered) fillColor = "#cce6ff";
+          return (
+            <g
+              key={tooth.id}
+              transform={`
+                translate(${tooth.x},${tooth.y})
+                ${isUpper ? "scale(1,-1)" : ""}
+              `}
+              onClick={() => {
+                setActiveTooth(tooth.id);
+                setSelectedCondition(status?.[tooth.id] || "");
+                setOpenDialog(true);
+              }}
+              onMouseEnter={() => setHoveredTooth(tooth.id)}
+              onMouseLeave={() => setHoveredTooth(null)}
+              style={{ cursor: "pointer" }}
+            >
+              <g transform={`scale(${scale}) translate(-50,-50)`}>
+                <path
+                  d={TOOTH_SHAPES[tooth.type]}
+                  fill={fillColor}
+                  stroke="#333"
+                />
+              </g>
+            </g>
+          );
+        })}
 
-              const scale = scaleMap[tooth.type];
+        {/* LABELS (FIXED & PERFECTLY ALIGNED) */}
+        {teeth.map((tooth) => {
+          const isUpper =
+            (mode === "adult" && tooth.id >= 1 && tooth.id <= 16) ||
+            (mode === "child" && upperChildTeeth.includes(tooth.id));
 
-              return (
-                <g
-                  key={tooth.id}
-                  transform={`
-                    translate(${tooth.x},${tooth.y})
-                    ${isUpper ? "scale(1,-1)" : ""}
-                  `}
-                  onClick={() => {
-                    setActiveTooth(tooth.id);
-                    setSelectedCondition(status?.[tooth.id] || "");
-                    setOpenDialog(true);
-                  }}
-                  onMouseEnter={() => setHoveredTooth(tooth.id)}
-                  onMouseLeave={() => setHoveredTooth(null)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <g transform={`scale(${scale}) translate(-50,-50)`}>
-                    <path
-                      d={TOOTH_SHAPES[tooth.type]}
-                      fill={fillColor}
-                      stroke="#333"
-                    />
-                  </g>
-                </g>
-              );
-            })}
+          return (
+            <text
+              key={`label-${tooth.id}`}
+              x={tooth.x + 20}
+              y={isUpper ? 105 : 160}   // 🔥 tweak here if needed
+              textAnchor="middle"
+              fontSize="11"
+              fill="#333"
+            >
+              {tooth.id}
+            </text>
+          );
+        })}
 
-            {/* LABELS */}
-            {teeth.map((tooth) => {
-              const isUpper =
-                (mode === "adult" && tooth.id >= 1 && tooth.id <= 16) ||
-                (mode === "child" && upperChildTeeth.includes(tooth.id));
-
-              return (
-                <text
-                  key={`label-${tooth.id}`}
-                  x={tooth.x + 20}
-                  y={isUpper ? 100 : 170}
-                  textAnchor="middle"
-                  className="fill-gray-800 font-semibold text-[16px] md:text-[12px]"
-                >
-                  {tooth.id}
-                </text>
-              );
-            })}
-
-          </svg>
-
-        </div>
-      </div>
+      </svg>
 
       {/* DIALOG */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
-
-          <h2 className="mb-4 font-semibold text-lg">
+          <h2 className="mb-4 font-semibold">
             Tooth {activeTooth}
           </h2>
 
           <select
             value={selectedCondition}
             onChange={(e) => setSelectedCondition(e.target.value)}
-            className="border p-2 w-full mb-4 rounded"
+            className="border p-2 w-full mb-4"
           >
             <option value="">Select Condition</option>
             <option value="caries">Caries</option>
@@ -186,11 +173,10 @@ function DentalChart({
               setCondition(selectedCondition);
               setOpenDialog(false);
             }}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white px-4 py-2 rounded"
           >
             Continue
           </button>
-
         </DialogContent>
       </Dialog>
 

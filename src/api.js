@@ -1,18 +1,17 @@
-const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:4000"
-    : "https://fhir-dental-demo-backend.vercel.app";
+export async function saveCondition(data){
 
-export async function saveCondition(data) {
-  console.log("Using API:", BASE_URL);
+  const response = await fetch("http://localhost:4000/save-condition",{
 
-  const response = await fetch(`${BASE_URL}/save-condition`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
+    method:"POST",
+
+    headers:{
+      "Content-Type":"application/json"
     },
-    body: JSON.stringify(data)
+
+    body:JSON.stringify(data)
+
   });
 
   return await response.json();
+
 }
